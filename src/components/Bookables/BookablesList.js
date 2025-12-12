@@ -17,12 +17,16 @@ export default function BookablesList() {
     function nextBookable(i) {
         setBookableIndex(i => (i + 1) % bookablesInGroup.length)
     }
+    function changeGroup(g) {
+        setGroup(g)
+        setBookableIndex(0)
+    }
 
     return (
         <Fragment>
             <div>
                 <select value={group}
-                    onChange={(e) => setGroup(e.target.value)}
+                    onChange={(e) => changeGroup(e.target.value)}
                 >
                     {groups.map(g => (
                         <option value={g} key={g}>{g}</option>
