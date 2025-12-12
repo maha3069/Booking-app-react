@@ -1,25 +1,45 @@
-import { useState, Fragment } from "react"
+import { useState, useReducer, Fragment } from "react"
 import bookables from '../../static.json'
 import { FaArrowRight } from 'react-icons/fa'
+import reducer from './reducer'
+const InitialState = {
+    group: "Rooms",
+    bookableINdex: 0,
+    hasDetail: false,
+    bookables
+}
 export default function BookablesList() {
 
-    const [group, setGroup] = useState("Kit")
+    const [state, dispatch] = useReducer(reducer, InitialState)
+    const { group, bookableIndex, hasDetail, bookables } = state
+
+
+
     const bookablesInGroup = bookables.bookables.filter(b => b.group === group)
     const groups = [...new Set(bookables.bookables.map(b => b.group))]
-    const [bookableIndex, setBookableIndex] = useState(0)
     const bookable = bookablesInGroup[bookableIndex]
-    console.log(bookable)
-    const [hasDetail, setHasDetail] = useState(false)
+
     const days = bookables.days
     const sessions = bookables.sessions
 
 
     function nextBookable(i) {
-        setBookableIndex(i => (i + 1) % bookablesInGroup.length)
+        dispatch({ type: "NEXT_BOOKABLE" })
     }
     function changeGroup(g) {
-        setGroup(g)
-        setBookableIndex(0)
+        dispatch({
+            type: "SET_GROUP",
+            payload: g
+        })
+    }
+    function toggleHasDetail() {
+        dispatch({ type: "TOGGLE_HAS_DETAILS" })
+    }
+    function setBookableIndex(i) {
+        dispatch({
+            type: "SET_BOOKABLE_INDEX",
+            payload: i
+        })
     }
 
     return (
@@ -45,7 +65,7 @@ export default function BookablesList() {
 
                 </ul>
                 <p>
-                    <button className="btn" autoFocus onClick={() => nextBookable(bookableIndex)}>
+                    <button className="btn" autoFocus onClick={() => nextBookable()}>
                         <FaArrowRight />
                         <span>Next</span>
                     </button>
@@ -60,7 +80,7 @@ export default function BookablesList() {
                                 <label>
                                     <input type="checkbox"
                                         checked={hasDetail}
-                                        onChange={() => setHasDetail(has => !has)}
+                                        onChange={() => toggleHasDetail()}
                                     />
                                     <span>Show Details</span>
                                 </label>
